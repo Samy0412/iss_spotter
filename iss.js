@@ -7,7 +7,7 @@ const request = require("request");
  *   - An error, if any (nullable)
  *   - The IP address as a string (null if error). Example: "162.245.144.188"
  */
-const fetchMyIP = function (callBack) {
+const fetchMyIP = function(callBack) {
   // use request to fetch IP address from JSON API
   request(`https://api.ipify.org?format=json`, (error, response, body) => {
     //error can be set if invalid domain, user is offline, etc.
@@ -24,7 +24,7 @@ const fetchMyIP = function (callBack) {
   });
 };
 
-const fetchCoordsByIP = function (ip, callBack) {
+const fetchCoordsByIP = function(ip, callBack) {
   // use request to fetch IP address from JSON API
   request(`https://ipvigilante.com/${ip}`, (error, response, body) => {
     //error can be set if invalid domain, user is offline, etc.
@@ -54,18 +54,23 @@ const fetchCoordsByIP = function (ip, callBack) {
  *   - The fly over times as an array of objects (null if error). Example:
  *     [ { risetime: 134564234, duration: 600 }, ... ]
  */
-const fetchISSFlyOverTimes = function (coords, callback) {
-  if (error) {
-    callBack(error, null);
-  }
-  // if non-200 status, assume server error
-  if (response.statusCode !== 200) {
-    const msg = `Status Code ${response.statusCode} when fetching data. Response: ${body}`;
-    callBack(Error(msg), null);
-    return;
-  }
-  const flyOverTimes = body.response;
-  callBack(null, flyOverTimes);
+const fetchISSFlyOverTimes = function(coords, callBack) {
+  request(
+    `http://api.open-notify.org/iss-pass.json?lat=${coords.latitude}&lon=${coords.longitude}`,
+    (error, response, body) => {
+      if (error) {
+        callBack(error, null);
+      }
+      // if non-200 status, assume server error
+      if (response.statusCode !== 200) {
+        const msg = `Status Code ${response.statusCode} when fetching data. Response: ${body}`;
+        callBack(Error(msg), null);
+        return;
+      }
+      const flyOverTimes = JSON.parse(body).response;
+      callBack(null, flyOverTimes);
+    }
+  );
 };
 
 module.exports = {
