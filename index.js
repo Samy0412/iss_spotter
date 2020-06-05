@@ -33,7 +33,7 @@ const { nextISSTimesForMyLocation } = require("./iss");
 //   }
 // );
 
-PrintPassTimes = function (passTimes) {
+const PrintPassTimes = function (passTimes) {
   for (let passTime of passTimes) {
     const datetime = new Date(0);
     datetime.setUTCSeconds(passTime.risetime);
